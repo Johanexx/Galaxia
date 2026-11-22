@@ -1,0 +1,213 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mi Universo ❤️</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #03000b;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    color: white;
+}
+
+canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.mensaje {
+    position: absolute;
+    top: 12%;
+    width: 100%;
+    text-align: center;
+    z-index: 2;
+    padding: 10px;
+}
+
+h1 {
+    font-size: clamp(28px, 6vw, 48px);
+    color: #ff8bd8;
+    text-shadow: 0 0 15px #ff1493,
+                 0 0 35px #9d00ff;
+}
+
+p {
+    margin-top: 15px;
+    font-size: 17px;
+    color: #ffd6f4;
+}
+
+button {
+    position: absolute;
+    z-index: 3;
+    bottom: 12%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 14px 28px;
+    border: 1px solid #ff8bd8;
+    border-radius: 30px;
+    color: white;
+    background: #8d167a66;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 0 20px #ff1493;
+}
+
+button:hover {
+    background: #d0008c;
+}
+
+</style>
+</head>
+
+<body>
+
+<canvas id="galaxia"></canvas>
+
+<div class="mensaje">
+    <h1>Mi universo eres tú ❤️</h1>
+    <p>Entre millones de estrellas, siempre te elegiría.</p>
+</div>
+
+<button onclick="mensajeAmor()">Descubre mi mensaje 💗</button>
+
+<script>
+const canvas = document.getElementById("galaxia");
+const ctx = canvas.getContext("2d");
+
+let width, height;
+let particles = [];
+let stars = [];
+let angle = 0;
+
+function resize() {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+}
+
+window.addEventListener("resize", resize);
+resize();
+
+// Crear estrellas
+for (let i = 0; i < 250; i++) {
+    stars.push({
+        x: Math.random(),
+        y: Math.random(),
+        size: Math.random() * 2,
+        alpha: Math.random()
+    });
+}
+
+// Crear partículas con forma de corazón
+for (let i = 0; i < 1800; i++) {
+    let t = Math.random() * Math.PI * 2;
+    let scale = Math.sqrt(Math.random());
+
+    let x = 16 * Math.pow(Math.sin(t), 3);
+    let y = -(13 * Math.cos(t) - 5 * Math.cos(2*t)
+             - 2 * Math.cos(3*t) - Math.cos(4*t));
+
+    particles.push({
+        x: x * scale,
+        y: y * scale,
+        size: Math.random() * 1.8 + 0.5,
+        color: Math.random() > 0.5 ? "#ff4fbd" : "#b45cff",
+        phase: Math.random() * 6.28
+    });
+}
+
+function draw() {
+    ctx.clearRect(0, 0, width, height);
+
+    // Fondo
+    let gradient = ctx.createRadialGradient(
+        width/2, height/2, 10,
+        width/2, height/2, height
+    );
+
+    gradient.addColorStop(0, "#190526");
+    gradient.addColorStop(1, "#03000b");
+
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, width, height);
+
+    // Estrellas
+    stars.forEach(s => {
+        ctx.fillStyle = `rgba(255,255,255,${s.alpha})`;
+        ctx.beginPath();
+        ctx.arc(s.x * width, s.y * height, s.size, 0, Math.PI*2);
+        ctx.fill();
+
+        s.alpha += (Math.random() - 0.5) * 0.05;
+        s.alpha = Math.max(0.1, Math.min(1, s.alpha));
+    });
+
+    let scale = Math.min(width, height) / 38;
+    let cx = width / 2;
+    let cy = height / 2;
+
+    // Resplandor central
+    let glow = ctx.createRadialGradient(cx, cy, 0, cx, cy, scale*17);
+    glow.addColorStop(0, "#ff149355");
+    glow.addColorStop(0.5, "#8d20ff22");
+    glow.addColorStop(1, "transparent");
+
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, 0, width, height);
+
+    // Dibujar galaxia de corazón
+    particles.forEach(p => {
+        let pulse = Math.sin(angle + p.phase) * 0.7;
+
+        let x = p.x * scale;
+        let y = p.y * scale;
+
+        let rotatedX = x * Math.cos(angle * 0.12)
+                     - y * Math.sin(angle * 0.12);
+        let rotatedY = x * Math.sin(angle * 0.12)
+                     + y * Math.cos(angle * 0.12);
+
+        ctx.beginPath();
+        ctx.fillStyle = p.color;
+        ctx.shadowBlur = 12;
+        ctx.shadowColor = p.color;
+
+        ctx.arc(
+            cx + rotatedX,
+            cy + rotatedY,
+            Math.max(0.4, p.size + pulse * 0.3),
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fill();
+    });
+
+    ctx.shadowBlur = 0;
+    angle += 0.003;
+
+    requestAnimationFrame(draw);
+}
+
+draw();
+
+// Mensaje especial
+function mensajeAmor() {
+    alert("No importa cuántos universos existan, mi lugar favorito siempre será a tu lado. ❤️✨");
+}
+</script>
+
+</body>
+</html>
