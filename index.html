@@ -4,210 +4,509 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mi Universo ❤️</title>
+<title>Nuestro Universo ❤️</title>
 
 <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
-    background: #03000b;
+    margin: 0;
     overflow: hidden;
-    font-family: Arial, sans-serif;
+    background: #02010a;
     color: white;
+    font-family: Arial, sans-serif;
 }
 
 canvas {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
+    display: block;
 }
 
-.mensaje {
-    position: absolute;
-    top: 12%;
+#titulo {
+    position: fixed;
+    top: 22px;
     width: 100%;
     text-align: center;
+    pointer-events: none;
     z-index: 2;
-    padding: 10px;
+    text-shadow: 0 0 20px #d75aff;
 }
 
-h1 {
-    font-size: clamp(28px, 6vw, 48px);
-    color: #ff8bd8;
-    text-shadow: 0 0 15px #ff1493,
-                 0 0 35px #9d00ff;
+#titulo h1 {
+    font-size: clamp(23px, 4vw, 38px);
+    margin: 0;
+    color: #f5caff;
 }
 
-p {
-    margin-top: 15px;
-    font-size: 17px;
-    color: #ffd6f4;
+#titulo p {
+    color: #c7b6e8;
+    font-size: 13px;
 }
 
-button {
-    position: absolute;
-    z-index: 3;
-    bottom: 12%;
+#instrucciones {
+    position: fixed;
+    bottom: 22px;
+    width: 100%;
+    text-align: center;
+    color: #c8b7dd;
+    font-size: 12px;
+    pointer-events: none;
+}
+
+#panel {
+    position: fixed;
+    display: none;
+    z-index: 5;
+    top: 50%;
     left: 50%;
-    transform: translateX(-50%);
-    padding: 14px 28px;
-    border: 1px solid #ff8bd8;
-    border-radius: 30px;
+    transform: translate(-50%, -50%);
+    width: min(340px, 88vw);
+    padding: 25px;
+    text-align: center;
+    border: 1px solid #c77cff88;
+    border-radius: 20px;
+    background: #10091eeF;
+    box-shadow: 0 0 45px #a52cff66;
+    animation: aparecer .7s ease;
+}
+
+#panel h2 {
+    color: #f6baff;
+    text-shadow: 0 0 15px #c000ff;
+}
+
+#panel p {
+    line-height: 1.7;
+    color: #e3d5f6;
+}
+
+#panel button {
+    background: linear-gradient(90deg, #a42aff, #f044b4);
     color: white;
-    background: #8d167a66;
-    font-size: 16px;
+    padding: 12px 22px;
+    border: none;
+    border-radius: 30px;
     cursor: pointer;
-    box-shadow: 0 0 20px #ff1493;
 }
 
-button:hover {
-    background: #d0008c;
+#cerrar {
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    background: transparent !important;
+    font-size: 22px;
+    padding: 2px !important;
 }
 
+#nombrePlaneta {
+    color: #ffb9ef;
+    font-size: 12px;
+    letter-spacing: 3px;
+}
+
+@keyframes aparecer {
+    from { opacity: 0; transform: translate(-50%,-45%); }
+    to { opacity: 1; transform: translate(-50%,-50%); }
+}
 </style>
 </head>
 
 <body>
 
-<canvas id="galaxia"></canvas>
-
-<div class="mensaje">
-    <h1>Mi universo eres tú ❤️</h1>
-    <p>Entre millones de estrellas, siempre te elegiría.</p>
+<div id="titulo">
+    <h1>✨ Nuestro Universo ✨</h1>
+    <p>Un universo entero no sería suficiente para expresar lo que siento</p>
 </div>
 
-<button onclick="mensajeAmor()">Descubre mi mensaje 💗</button>
+<div id="panel">
+    <button id="cerrar" onclick="regresar()">×</button>
+    <div id="nombrePlaneta">PLANETA ESPECIAL</div>
+    <h2 id="tituloPlaneta">Nuestro mundo ❤️</h2>
+    <p id="mensajePlaneta"></p>
+    <button onclick="regresar()">Volver al universo ✨</button>
+</div>
 
-<script>
-const canvas = document.getElementById("galaxia");
-const ctx = canvas.getContext("2d");
+<div id="instrucciones">
+    Arrastra para explorar · Usa la rueda para acercarte · Haz clic en los planetas
+</div>
 
-let width, height;
-let particles = [];
-let stars = [];
-let angle = 0;
-
-function resize() {
-    width = canvas.width = window.innerWidth;
-    height = canvas.height = window.innerHeight;
-}
-
-window.addEventListener("resize", resize);
-resize();
-
-// Crear estrellas
-for (let i = 0; i < 250; i++) {
-    stars.push({
-        x: Math.random(),
-        y: Math.random(),
-        size: Math.random() * 2,
-        alpha: Math.random()
-    });
-}
-
-// Crear partículas con forma de corazón
-for (let i = 0; i < 1800; i++) {
-    let t = Math.random() * Math.PI * 2;
-    let scale = Math.sqrt(Math.random());
-
-    let x = 16 * Math.pow(Math.sin(t), 3);
-    let y = -(13 * Math.cos(t) - 5 * Math.cos(2*t)
-             - 2 * Math.cos(3*t) - Math.cos(4*t));
-
-    particles.push({
-        x: x * scale,
-        y: y * scale,
-        size: Math.random() * 1.8 + 0.5,
-        color: Math.random() > 0.5 ? "#ff4fbd" : "#b45cff",
-        phase: Math.random() * 6.28
-    });
-}
-
-function draw() {
-    ctx.clearRect(0, 0, width, height);
-
-    // Fondo
-    let gradient = ctx.createRadialGradient(
-        width/2, height/2, 10,
-        width/2, height/2, height
-    );
-
-    gradient.addColorStop(0, "#190526");
-    gradient.addColorStop(1, "#03000b");
-
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, width, height);
-
-    // Estrellas
-    stars.forEach(s => {
-        ctx.fillStyle = `rgba(255,255,255,${s.alpha})`;
-        ctx.beginPath();
-        ctx.arc(s.x * width, s.y * height, s.size, 0, Math.PI*2);
-        ctx.fill();
-
-        s.alpha += (Math.random() - 0.5) * 0.05;
-        s.alpha = Math.max(0.1, Math.min(1, s.alpha));
-    });
-
-    let scale = Math.min(width, height) / 38;
-    let cx = width / 2;
-    let cy = height / 2;
-
-    // Resplandor central
-    let glow = ctx.createRadialGradient(cx, cy, 0, cx, cy, scale*17);
-    glow.addColorStop(0, "#ff149355");
-    glow.addColorStop(0.5, "#8d20ff22");
-    glow.addColorStop(1, "transparent");
-
-    ctx.fillStyle = glow;
-    ctx.fillRect(0, 0, width, height);
-
-    // Dibujar galaxia de corazón
-    particles.forEach(p => {
-        let pulse = Math.sin(angle + p.phase) * 0.7;
-
-        let x = p.x * scale;
-        let y = p.y * scale;
-
-        let rotatedX = x * Math.cos(angle * 0.12)
-                     - y * Math.sin(angle * 0.12);
-        let rotatedY = x * Math.sin(angle * 0.12)
-                     + y * Math.cos(angle * 0.12);
-
-        ctx.beginPath();
-        ctx.fillStyle = p.color;
-        ctx.shadowBlur = 12;
-        ctx.shadowColor = p.color;
-
-        ctx.arc(
-            cx + rotatedX,
-            cy + rotatedY,
-            Math.max(0.4, p.size + pulse * 0.3),
-            0,
-            Math.PI * 2
-        );
-
-        ctx.fill();
-    });
-
-    ctx.shadowBlur = 0;
-    angle += 0.003;
-
-    requestAnimationFrame(draw);
-}
-
-draw();
-
-// Mensaje especial
-function mensajeAmor() {
-    alert("No importa cuántos universos existan, mi lugar favorito siempre será a tu lado. ❤️✨");
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+  }
 }
 </script>
 
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+// ESCENA
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x02010a);
+scene.fog = new THREE.FogExp2(0x05010e, 0.002);
+
+const camera = new THREE.PerspectiveCamera(
+    65, window.innerWidth / window.innerHeight, 0.1, 1000
+);
+
+camera.position.set(0, 12, 42);
+
+const renderer = new THREE.WebGLRenderer({
+    antialias: true,
+    powerPreference: "high-performance"
+});
+
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.4;
+document.body.appendChild(renderer.domElement);
+
+// CONTROLES
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.04;
+controls.minDistance = 4;
+controls.maxDistance = 100;
+controls.enablePan = true;
+
+// LUCES
+scene.add(new THREE.AmbientLight(0xffffff, 1.5));
+
+const sunLight = new THREE.PointLight(0xffc4f5, 1800, 200);
+sunLight.position.set(0, 10, 0);
+scene.add(sunLight);
+
+// ESTRELLAS
+const starGeometry = new THREE.BufferGeometry();
+const starPositions = [];
+
+for(let i = 0; i < 7000; i++) {
+    starPositions.push(
+        (Math.random() - .5) * 500,
+        (Math.random() - .5) * 300,
+        (Math.random() - .5) * 500
+    );
+}
+
+starGeometry.setAttribute(
+    'position',
+    new THREE.Float32BufferAttribute(starPositions, 3)
+);
+
+const starMaterial = new THREE.PointsMaterial({
+    color: 0xffffff,
+    size: 0.22,
+    transparent: true,
+    opacity: .85
+});
+
+const stars = new THREE.Points(starGeometry, starMaterial);
+scene.add(stars);
+
+// NEBULOSA CENTRAL
+const nebulaGeometry = new THREE.BufferGeometry();
+const nebulaPositions = [];
+const nebulaColors = [];
+
+const palette = [
+    new THREE.Color(0x9b35ff),
+    new THREE.Color(0xff36b8),
+    new THREE.Color(0x4938ff)
+];
+
+for(let i = 0; i < 3500; i++) {
+    const a = Math.random() * Math.PI * 2;
+    const r = 5 + Math.random() * 25;
+    const spread = (Math.random() - .5) * 9;
+
+    nebulaPositions.push(
+        Math.cos(a) * r,
+        spread,
+        Math.sin(a) * r
+    );
+
+    const c = palette[Math.floor(Math.random()*palette.length)];
+    nebulaColors.push(c.r, c.g, c.b);
+}
+
+nebulaGeometry.setAttribute(
+    'position',
+    new THREE.Float32BufferAttribute(nebulaPositions, 3)
+);
+
+nebulaGeometry.setAttribute(
+    'color',
+    new THREE.Float32BufferAttribute(nebulaColors, 3)
+);
+
+const nebula = new THREE.Points(
+    nebulaGeometry,
+    new THREE.PointsMaterial({
+        size: .45,
+        vertexColors: true,
+        transparent: true,
+        opacity: .45,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false
+    })
+);
+
+scene.add(nebula);
+
+// ESTRELLA CENTRAL
+const core = new THREE.Mesh(
+    new THREE.SphereGeometry(2, 32, 32),
+    new THREE.MeshBasicMaterial({ color: 0xff9bea })
+);
+scene.add(core);
+
+const coreGlow = new THREE.PointLight(0xff36d5, 600, 65);
+scene.add(coreGlow);
+
+// PLANETAS
+const planets = [];
+
+const data = [
+    {
+        name: "El comienzo",
+        subtitle: "PLANETA DE LOS RECUERDOS",
+        message: "Cada historia tiene un comienzo. Y si pudiera volver a empezar, volvería a elegirte. ❤️",
+        color: 0xff4bba,
+        position: [-13, 2, -8],
+        size: 2.2,
+        ring: true
+    },
+    {
+        name: "Mi lugar favorito",
+        subtitle: "PLANETA DEL AMOR",
+        message: "No necesito conocer todos los lugares del universo. Mi lugar favorito siempre será donde estés tú. 💗",
+        color: 0x7c55ff,
+        position: [12, -2, -10],
+        size: 2.8,
+        ring: true
+    },
+    {
+        name: "Nuestro futuro",
+        subtitle: "PLANETA DE LOS SUEÑOS",
+        message: "Hay millones de estrellas por descubrir y espero poder descubrirlas contigo. ✨",
+        color: 0x36caff,
+        position: [0, 5, 15],
+        size: 2.5,
+        ring: false
+    },
+    {
+        name: "Eres única",
+        subtitle: "ESTRELLA ESPECIAL",
+        message: "Entre miles de millones de galaxias, no existe otra estrella que brille como tú. 🌟",
+        color: 0xffd16a,
+        position: [20, 8, 10],
+        size: 1.6,
+        ring: false
+    }
+];
+
+function crearPlaneta(info, index) {
+    const group = new THREE.Group();
+
+    group.position.set(...info.position);
+
+    const planet = new THREE.Mesh(
+        new THREE.SphereGeometry(info.size, 64, 64),
+        new THREE.MeshStandardMaterial({
+            color: info.color,
+            roughness: .65,
+            metalness: .15,
+            emissive: info.color,
+            emissiveIntensity: .12
+        })
+    );
+
+    group.add(planet);
+
+    // ANILLO
+    if(info.ring) {
+        const ring = new THREE.Mesh(
+            new THREE.RingGeometry(info.size * 1.4, info.size * 2.1, 100),
+            new THREE.MeshBasicMaterial({
+                color: info.color,
+                side: THREE.DoubleSide,
+                transparent: true,
+                opacity: .65
+            })
+        );
+
+        ring.rotation.x = Math.PI / 2.5;
+        group.add(ring);
+    }
+
+    // LUZ PROPIA
+    const light = new THREE.PointLight(info.color, 35, 20);
+    group.add(light);
+
+    planet.userData.info = info;
+    planet.userData.group = group;
+
+    scene.add(group);
+
+    planets.push({
+        mesh: planet,
+        group,
+        info,
+        phase: index * 1.5,
+        original: new THREE.Vector3(...info.position)
+    });
+}
+
+data.forEach(crearPlaneta);
+
+// ÓRBITAS DECORATIVAS
+for(let i = 0; i < 3; i++) {
+    const orbit = new THREE.Mesh(
+        new THREE.TorusGeometry(17 + i * 5, .025, 8, 180),
+        new THREE.MeshBasicMaterial({
+            color: i % 2 ? 0x873bff : 0xe43bd1,
+            transparent: true,
+            opacity: .2
+        })
+    );
+
+    orbit.rotation.x = Math.PI / 2 + i * .15;
+    orbit.rotation.y = i * .4;
+    scene.add(orbit);
+}
+
+// INTERACCIÓN
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+
+let selected = null;
+let moving = false;
+let destination = null;
+let targetDestination = null;
+let cameraDestination = null;
+
+function seleccionar(event) {
+    if(moving) return;
+
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+    raycaster.setFromCamera(mouse, camera);
+
+    const hits = raycaster.intersectObjects(
+        planets.map(p => p.mesh)
+    );
+
+    if(hits.length) {
+        entrar(hits[0].object);
+    }
+}
+
+renderer.domElement.addEventListener('click', seleccionar);
+
+function entrar(mesh) {
+    selected = mesh;
+    moving = true;
+
+    const group = mesh.userData.group;
+    const info = mesh.userData.info;
+
+    const worldPosition = new THREE.Vector3();
+    group.getWorldPosition(worldPosition);
+
+    const direction = new THREE.Vector3()
+        .subVectors(camera.position, worldPosition)
+        .normalize();
+
+    cameraDestination = worldPosition.clone()
+        .add(direction.multiplyScalar(info.size * 3.5));
+
+    targetDestination = worldPosition.clone();
+
+    // El planeta se muestra después del viaje
+    setTimeout(() => {
+        document.getElementById('nombrePlaneta').textContent =
+            info.subtitle;
+
+        document.getElementById('tituloPlaneta').textContent =
+            info.name;
+
+        document.getElementById('mensajePlaneta').textContent =
+            info.message;
+
+        document.getElementById('panel').style.display = 'block';
+        moving = false;
+    }, 1600);
+}
+
+window.regresar = function() {
+    document.getElementById('panel').style.display = 'none';
+
+    const start = new THREE.Vector3(0, 12, 42);
+    cameraDestination = start;
+    targetDestination = new THREE.Vector3(0, 0, 0);
+    moving = true;
+    selected = null;
+};
+
+// ANIMACIÓN
+const clock = new THREE.Clock();
+
+function animate() {
+    requestAnimationFrame(animate);
+
+    const time = clock.getElapsedTime();
+
+    // Rotación de universo
+    stars.rotation.y += .00008;
+    nebula.rotation.y += .001;
+    core.rotation.y += .004;
+
+    // Pulso de la estrella central
+    const pulse = 1 + Math.sin(time * 2) * .07;
+    core.scale.setScalar(pulse);
+
+    // Movimiento orbital de los planetas
+    planets.forEach((p, i) => {
+        p.mesh.rotation.y += .003;
+
+        if(selected !== p.mesh) {
+            const offset = Math.sin(time * .35 + p.phase) * .4;
+            p.group.position.y = p.original.y + offset;
+        }
+    });
+
+    // Movimiento suave de cámara
+    if(moving && cameraDestination && targetDestination) {
+        camera.position.lerp(cameraDestination, .035);
+        controls.target.lerp(targetDestination, .035);
+
+        if(camera.position.distanceTo(cameraDestination) < .08 &&
+           controls.target.distanceTo(targetDestination) < .08) {
+            camera.position.copy(cameraDestination);
+            controls.target.copy(targetDestination);
+            moving = false;
+        }
+    }
+
+    controls.update();
+    renderer.render(scene, camera);
+}
+
+animate();
+
+// RESPONSIVE
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+});
+
+</script>
 </body>
 </html>
